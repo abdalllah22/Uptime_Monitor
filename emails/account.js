@@ -30,10 +30,22 @@ const sendCancelEmail = (email, name) => {
     
 }
 
+const sendNotificationEmail = (email, name, message,url) => {
+    sgMail.send({
+        to: email, 
+        from: 'ahmed.abdalllah22@gmail.com', 
+        subject: 'Notification Mail',
+        html: `<strong>Hello ${name}, 
+                Notification: ${message} </strong>
+                <p>${url} was down </p>`
+    }) 
+}
+
 
 
 
 module.exports = {
     sendVerificationEmail,
-    sendCancelEmail
+    sendCancelEmail,
+    sendNotificationEmail
 }
