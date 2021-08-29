@@ -30,7 +30,7 @@ router.get('/users/verify-email',  async (req, res) => {
             user.isVerified = true
             user.tokens = []
             await user.save()
-            res.send('user verify his account')
+            res.status(200).send('user verify his account')
         }
     } catch (error) {
         res.status(400).send()
@@ -44,9 +44,9 @@ router.post('/users/login', async (req, res) => {
         const user = await User.findByCredentials(req.body.email, req.body.password)
         const token = await user.generateAuthToken()
         if (user.isVerified === false){
-            res.send('verify your account first')
+            res.status(404).send('verify your account first')
         }else{
-            res.send({
+            res.status(200).send({
                 user,
                 token
             })

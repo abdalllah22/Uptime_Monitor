@@ -20,13 +20,6 @@ const reportSchema = new mongoose.Schema({
     uptime:{
         type:Number,
     },
-    checkHistory:[{
-        history:{
-            type: String,
-            enum: ['up', 'down'],
-            timestamps: true
-        }  
-    }],
     check_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Check'

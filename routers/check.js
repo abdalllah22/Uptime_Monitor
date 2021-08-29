@@ -97,7 +97,6 @@ router.post('/checks/run',auth, async (req,res) => {
                 // console.log('Your check become down')
             }
             const downTimeTemp = await reportResult.downtime + (checkResult.interval * 60);
-            reportResult.checkHistory = reportResult.checkHistory.concat({ history: reportResult.status })
             await Report.updateOne({
                 check_id:checkId, 
             },{
@@ -112,7 +111,7 @@ router.post('/checks/run',auth, async (req,res) => {
                 check_id: checkId,
             })
             
-            res.send('site is down ')
+            res.status(500).send('site is down ')
         })
         
 
@@ -122,7 +121,6 @@ router.post('/checks/run',auth, async (req,res) => {
                 // console.log('Your check become up')
             }
             const upTimeTemp = reportResult.uptime + (checkResult.interval * 60);
-            reportResult.checkHistory = reportResult.checkHistory.concat({ history: reportResult.status })
             await Report.updateOne({
                 check_id:checkId, 
             },{
@@ -136,9 +134,9 @@ router.post('/checks/run',auth, async (req,res) => {
                 status: 'up',
                 check_id: checkId,
             })
-            res.send('site is up')
+            res.status(200).send('site is up')
         } 
-    },checkResult.interval*60*1000) //checkResult.interval*60*1000
+    },1000) //checkResult.interval*60*1000
 })
 
 router.get('/checks/report',auth, async (req,res) => {
