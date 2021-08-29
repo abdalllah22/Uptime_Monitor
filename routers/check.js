@@ -31,7 +31,7 @@ router.post('/checks', auth ,async (req, res) => {
 
 })
 
-router.patch('/checks/:id', auth,async (req,res) => {
+router.patch('/checks/edit/:id', auth,async (req,res) => {
     const _id = req.params.id
     
     const updates = Object.keys(req.body)
@@ -70,7 +70,7 @@ router.patch('/checks/:id', auth,async (req,res) => {
     }
 })
 
-router.delete('/checks/:id', auth , async (req,res) => {
+router.delete('/checks/delete/:id', auth , async (req,res) => {
     const _id = req.params.id 
     try {
         const check = await Check.findOneAndDelete({_id: req.params.id , owner:req.user._id})

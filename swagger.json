@@ -1,0 +1,556 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "version": "1.0.0",
+        "title": "Up Monitor",
+        "description": "A RESTful API for uptime monitor app"
+    },
+    "server": {
+        "url": "http://127.0.0.1:3000/",
+        "description": "Localhost"
+    },
+    "host": "localhost:3000",
+    "basePath": "/",
+    "tags": [{
+        "name": "Users",
+        "description": "Allow sers  to use system"
+    }, {
+        "name": "Checks",
+        "description": "Check for site's uptime and downtime"
+    }],
+    "schemes": ["http"],
+    "security": [{
+        "JWT": []
+    }],
+    "definitions": {
+        "User": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "'Ahmed Abdallah'"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "ahmed.abdalllah22@gmail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "zxzx1212"
+                },
+                "isVerified":{
+                    "type": "boolean",
+                    "example" : true
+                }
+            }
+        },
+        "Check": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "check one"
+                },
+                "url": {
+                    "type": "string",
+                    "example": "google.com"
+                },
+                "protocol": {
+                    "type": "string",
+                    "example": "HTTPS"
+                },
+                "path": {
+                    "type": "string",
+                    "example": "//"
+                },
+                "port": {
+                    "type": "integer",
+                    "example": 80
+                },
+                "timeout": {
+                    "type": "integer",
+                    "example": 5   
+                },
+                "interval": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "authentication": {
+                    "type": "string",
+                    "example": "{'email':'ahmed.abdalllah22@gmail.com','password':'zxzx1212'}"
+                },
+                "httpHeaders": {
+                    "type": "string",
+                    "example": ""
+                },
+                "assertStatusCode": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "ignoreSSL": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "tags": {
+                    "type": "string",
+                    "example": ""
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "JWT": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        },
+        "schemas": {},
+        "requestBodies": {},
+        "responses": {
+            "UnauthorizedErrorResponse": {
+                "description": "Unauthorized",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "default": "Unauth"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ForbiddenErrorResponse": {
+                "description": "Forbidden",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "default": "forbidden."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "BadRequestErrorResponse": {
+                "description": "Bad Request",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "request is invalid"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "InternalServerErrorResponse": {
+                "description": "Internal Server Error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "something went wrong."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "paths": {
+        "/users": {
+            "post": {
+                "tags": ["Users"],
+                "summary": "Create new user in system",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["name", "email", "password"],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Ahmed Abdallah"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "ahmed.abdalllah22@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "zxzx1212"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestErrorResponse"
+                    },
+                    "201": {
+                        "description": "New user is created"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerErrorResponse"
+
+                    }
+                }
+            }
+        }, 
+        "/users/verify-email": {
+            "get": {
+                "tags": ["Users"],
+                "summary": "verify user E-mail",
+                "responses": {
+                    "201": {
+                        "description": "user verify his account"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/UnauthorizedErrorResponse"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerErrorResponse"
+
+                    }
+                }
+            }
+        },
+        "/users/login": {
+            "post": {
+                "tags": ["Users"],
+                "summary": "Logs user into the system",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["email", "password"],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "ahmed.abdalllah22@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "zxzx1212"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid username/password supplied"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerErrorResponse"
+
+                    }
+                }
+            }
+        },
+        "/users/me": {
+            "patch": {
+                "tags": ["Users"],
+                "summary": "Edit User Profile",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["name", "email", "password"],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Ahmed Abdalla"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "ahmed.abdalllah22@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "zxzx1212"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestErrorResponse"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerErrorResponse"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/UnauthorizedErrorResponse"
+                    }
+
+                }
+            }
+        },
+        "/checks/create": {
+            "post": {
+                "tags": ["Check"],
+                "summary": "Creates check with its report",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["name", "url", "protocol"],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Check one"
+                                    },
+                                    "url": {
+                                        "type": "string",
+                                        "example": "google.com"
+                                    },
+                                    "protocol": {
+                                        "type": "string",
+                                        "example": "HTTPS"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestErrorResponse"
+                    },
+                    "200": {
+                        "description": "New check is created"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerErrorResponse"
+                    }
+                }
+            }
+        },
+        "/checks/edit/{id}": {
+            "patch": {
+                "tags": ["Check"],
+                "summary": "Update check by ID.",
+                "parameters":{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The ID of the check to return.",
+                    "schema": {
+                        "type": "object",
+                        "format": "string"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["chcekId","name", "url", "protocol"],
+                                "properties": {
+                                    "checkId":{
+                                        "type":"object",
+                                        "example":{"_id": "612ac8aa6086f9f0156824d1"}
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Check one"
+                                    },
+                                    "url": {
+                                        "type": "string",
+                                        "example": "google.com"
+                                    },
+                                    "protocol": {
+                                        "type": "string",
+                                        "example": "HTTPS"
+                                    },
+                                    "path": {
+                                        "type": "string",
+                                        "example": "//"
+                                    },
+                                    "port": {
+                                        "type": "integer",
+                                        "example": 80
+                                    },
+                                    "timeout": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "intervals": {
+                                        "type": "integer",
+                                        "example": 10
+                                    },
+                                    "authentication": {
+                                        "type": "string",
+                                        "example": "{'email':'ahmed.abdalllah22@gmail.com','password':'zxzx1212'}"
+                                    },
+                                    "httpHeaders": {
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "assertStatusCode": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "ignoreSSL": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "tags": {
+                                        "type": "string",
+                                        "example": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestErrorResponse"
+                    },
+                    "201": {
+                        "description": "check is updated"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerErrorResponse"
+                    }
+                }
+            }
+        },
+        "/checks/delete/{id}": {
+            "delete": {
+                "tags": ["Check"],
+                "summary": "Delete check by ID",
+                "parameters":{
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "The ID of the check to delete.",
+                    "schema": {
+                        "type": "object",
+                        "format": "string"
+                    }
+                },
+                "responses": {
+                    "404": {
+                        "description": "check not found"
+                    },
+                    "201": {
+                        "description": "Check deleted successfuly"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerErrorResponse"
+                    }
+                }
+            }
+        },
+        "/check/run": {
+            "post": {
+                "tags": ["Check"],
+                "summary": "run check and update report and history.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["chcek_id"],
+                                "properties": {
+                                    "check_id": {
+                                        "type": "object",
+                                        "example": {"_id": "612ac8aa6086f9f0156824d1"}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "404": {
+                        "description": "your check not found"
+                    },
+                    "200": {
+                        "description": "check running"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerErrorResponse"
+                    }
+                }
+            }
+        },
+        "/check/report": {
+            "get": {
+                "tags": ["Check"],
+                "summary": "Return report to specific check",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["chcek_id"],
+                                "properties": {
+                                    "checkId": {
+                                        "type": "object",
+                                        "example": {"_id": "612ac8aa6086f9f0156824d1"}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "404": {
+                        "description": "check not found"
+                    },
+                    "200": {
+                        "description": "check report"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerErrorResponse"
+
+                    }
+                }
+            }
+        }
+    }
+}
