@@ -21,7 +21,6 @@ router.post('/checks', auth, async (req, res) => {
       outages: 0,
       downtime: 0,
       uptime: 60,
-      checkHistory: { history: 'up' },
       check_id: check._id,
     });
     res.status(201).send(check);
